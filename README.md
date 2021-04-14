@@ -1,2 +1,2 @@
 # Algo-Final-Project
-# Implementation of MiniMax AI in TicTacToe
+Implementation of MiniMax AI in TicTacToe
