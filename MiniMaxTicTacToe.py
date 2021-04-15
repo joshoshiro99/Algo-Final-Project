@@ -9,8 +9,7 @@ from math import inf as infinity
 # -----notes-----
 # the terminal output window is 13x7
 # 
-# right now the ai does not select the winning move
-#
+# the AI makes the first available move, not the best
 
 # -----global variables-----
 HUMAN = -1 
@@ -181,11 +180,13 @@ def evaluate(state):
 #                       or
 #   maximizing the gain for a minimum gain scenario
 def minimax(state, depth, player):
-    if player == AI:
-        best = [-1, -1, -infinity]
-    else:
-        best = [-1, -1, +infinity]
+    #best move by default is an invalid move because it is TBD
+    if player == AI: #if player is MAX
+        best = [-1, -1, -99]
+    else: 
+        best = [-1, -1, +99]
 
+    #check if game has been won
     if depth == 0 or game_ends(state):
         score = evaluate(state)
         return [-1, -1, score]
@@ -207,10 +208,10 @@ def minimax(state, depth, player):
             if score[2] > best[2]:
                 best = score # highest value
         else:
-                if score[2] < best[2]:
-                    best = score # min value
+            if score[2] < best[2]:
+                best = score # min value
 
-        return best
+    return best
 
 # -----driver code-----
 def main():
