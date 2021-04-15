@@ -4,12 +4,11 @@ import time
 import platform
 from os import system
 from random import choice
-from math import inf as infinity
 
 # -----notes-----
 # the terminal output window is 13x7
 # 
-# the AI makes the first available move, not the best
+# 
 
 # -----global variables-----
 HUMAN = -1 
@@ -93,7 +92,9 @@ def wins(state, player):
 # ensures the game has not been won
 # RETURN: BOOL
 def game_ends(state):
-    return wins(state,HUMAN) or wins(state, AI)
+    depth = len(empty_cells(board))
+    
+    return wins(state,HUMAN) or wins(state, AI) or depth==0
 
 # player turn code 
 # *look inside for further info*
