@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -----imports-----
+import time
 import platform
 from os import system
+from random import choice
+from math import inf as infinity
 
 # -----notes-----
 # the terminal output window is 13x7
 # 
-#
+# right now the ai does not select the winning move
 #
 
 # -----global variables-----
@@ -102,7 +105,7 @@ def player_turn(a_choice, p_choice):
     if depth == 0 or game_ends(board):
         return
 
-    #defaul the moves value and provide a dict of numpad -> coords
+    #default the moves value and provide a dict of numpad -> coords
     move = -1
     moves = {
         1: [0, 0], 
@@ -136,7 +139,78 @@ def player_turn(a_choice, p_choice):
         except (KeyError, ValueError):
             print('Bad choice')
 
+# -----AI functions-----
 
+# computer turn code
+# *look inside for further info*
+def comp_turn(a_choice, p_choice):
+    #check depth of game tree
+    depth = len(empty_cells(board))
+    if depth == 0 or game_ends(board):
+        return
+
+    clean()
+    print(f'Computer turn [{a_choice}]')
+    render(board, a_choice, p_choice)
+
+    # random start
+    if depth == 9:
+        x = choice([0, 1, 2])
+        y = choice([0, 1, 2])
+    else: # subsequent turns will be determined with minimax
+        move = minimax(board, depth, AI)
+        x, y = move[0], move[1]
+
+    make_move(x, y, AI)
+    time.sleep(1)
+
+# returns scoring for the current board
+# returns +1, -1, 0 
+def evaluate(state):
+    if wins(state, AI):
+        score = +1
+    elif wins(state, HUMAN):
+        score = -1
+    else:
+        score = 0
+    return score
+
+# minimax code 
+# minimax is a decision rule for:
+#   minimizing the loss for a maximum loss scenario
+#                       or
+#   maximizing the gain for a minimum gain scenario
+def minimax(state, depth, player):
+    if player == AI:
+        best = [-1, -1, -infinity]
+    else:
+        best = [-1, -1, +infinity]
+
+    if depth == 0 or game_ends(state):
+        score = evaluate(state)
+        return [-1, -1, score]
+
+    for cell in empty_cells(state):
+        # get coords for next available space
+        x, y = cell[0], cell[1]
+        # insert player to the grid
+        state[x][y] = player
+        # get the state to play, next turn, and alternate min/max player
+        score = minimax(state, depth -1 , -player)
+
+        #reset board position
+        state[x][y] = 0
+        #save result of minimax
+        score[0], score[1] = x, y
+
+        if player == AI:
+            if score[2] > best[2]:
+                best = score # highest value
+        else:
+                if score[2] < best[2]:
+                    best = score # min value
+
+        return best
 
 # -----driver code-----
 def main():
@@ -146,14 +220,16 @@ def main():
     while(not game_ends(board)):
         #game loop outline:
         # 1)render the current board
-        # 2)get player input
-        # 3)get AI input
-        # 4)repeat until win/draw/lose
         clean()
         render(board, a_choice, p_choice)
+
+        # 2)get player input
         player_turn(a_choice,p_choice)
 
-        
+        # 3)get AI input
+        comp_turn(a_choice,p_choice)
+
+        # 4)repeat until win/draw/lose
         
     # render final board
     render(board,a_choice,p_choice)
