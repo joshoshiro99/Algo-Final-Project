@@ -36,7 +36,6 @@ def render(state, a_choice, p_choice):
             symbol = chars[cell]
             print(f'| {symbol} |', end='')
         print('\n' + str_line)
-
 # clears the screen
 def clean(): 
     os_name = platform.system().lower()

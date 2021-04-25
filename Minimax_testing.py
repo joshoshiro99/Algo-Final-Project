@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-
 # Todo:
 #  -see "TESTING TO FILE OUTPUT"
 #
+
 
 # testing file for Minimax:
 #   - this file will create an environment that will enable the AI 
@@ -12,20 +12,24 @@
 #   Game 0:\tFirst\tSecond\tThird\tFourth\tFifth\tSixth\tSeventh\tEighth\tNinth
 import MiniMaxTicTacToe
 
+# reset the board
+def reset():
+    board = [
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+    ]
+    return board
+
 #----------AI ALGORITHM----------#
 def comp_turn(a_choice, p_choice, current):
     # retrieve current board
     board = MiniMaxTicTacToe.board
-    
+    performance = 0
     # check depth of game tree
     depth = len(MiniMaxTicTacToe.empty_cells(board))
     if depth == 0 or MiniMaxTicTacToe.game_ends(board):
         return
-
-    # render
-    MiniMaxTicTacToe.clean()
-    print(f'Computer turn [{a_choice}]')
-    MiniMaxTicTacToe.render(board, a_choice, p_choice)
 
     if depth == 9:
         # random start
@@ -40,18 +44,15 @@ def comp_turn(a_choice, p_choice, current):
         # get the Minimax recommended move to make
         move = MiniMaxTicTacToe.minimax(board, depth, current)
 
-        # output minimax performance
-        print('Minimax time:')
-        print(MiniMaxTicTacToe.time.time() - minimax_start)
+        # save minimax performance
+        performance = MiniMaxTicTacToe.time.time() - minimax_start
         
         # save the move coordinates
         x, y = move[0], move[1]
 
     # apply the move to the board
     MiniMaxTicTacToe.make_move(x, y, current)
-
-    print()
-    MiniMaxTicTacToe.time.sleep(1)
+    return performance
 
 #------------MAIN------------------#
 def main():
@@ -59,7 +60,7 @@ def main():
     p2_choice = 'O'
 
     # debug flag
-    debug = True
+    debug = False
     board = MiniMaxTicTacToe.board
     if debug:
         #-------DEBUG GAMELOOP--------#
@@ -79,27 +80,64 @@ def main():
 
             # render results of player 2
             MiniMaxTicTacToe.render(board, p1_choice, p2_choice)
-        else:
-            #-----------TESTING TO FILE OUTPUT-------#
-            # Todo:
-            #  -read in previous game number
-            #  -take in requested number of games
-            #  -game management system
-            #       -start a game
-            #       -record each turns input
-            #       -aggregate data into file append
-            #       -restart game
-            #  
+    else:
+        #-----------TESTING TO FILE OUTPUT-------#
+        # for reference, here is the table format:
+        # Game 0:\tFirst\tSecond\tThird\tFourth\tFifth\tSixth\tSeventh\tEighth\tNinth
+            
+        #initial file operation
+        file_minimax = open("Minimax_data.txt","a")
 
-            # for reference, here is the table format:
-            # Game 0:\tFirst\tSecond\tThird\tFourth\tFifth\tSixth\tSeventh\tEighth\tNinth
+        #get beginning game number
+        starting_game_number = int(input("Game number of first game: "))
 
-            # record each turn's performance, add to performance array
-            # output performance in above format
-            # maximizer
-            comp_turn(board, p1_choice, p2_choice)
-            # minimizer
-            comp_turn(board, p2_choice, p1_choice)
+        #get number of games to play
+        games_to_play = int(input("How many games do you want the AI to simulate? "))
+
+        # Set initial game number
+        gamecounter = starting_game_number
+
+        # store clear board state
+        reset_board = MiniMaxTicTacToe.board 
+
+        # GAMES loop
+        while(gamecounter<starting_game_number+games_to_play):
+            #get first half of output string
+            gamestring_1  = "Game "+str(gamecounter)+": "
+
+            #  get a clean board
+            MiniMaxTicTacToe.board = reset()
+
+            #init performance array
+            performance_array = []
+            separator = '\t'
+
+            #  gameloop
+            while(not MiniMaxTicTacToe.game_ends(board)):
+
+                # record each turn's performance, add to performance array
+                #   player 1 (maximizer)
+                performance_array.append(str(comp_turn(p1_choice, p2_choice, +1)))
+
+                #   player 2 (minimizer)
+                performance_array.append(str(comp_turn(p1_choice, p2_choice, -1)))
+
+            #get second half of output string
+            gamestring_2 = separator.join(performance_array)
+
+            #output full output string
+            file_minimax.write(str(gamestring_1)+str(gamestring_2)+'\n')
+
+            #inc game counter
+            gamecounter += 1
+
+
+
+        
+
+
+        #close file
+        file_minimax.close()
 
 if __name__ == "__main__":
     main()
