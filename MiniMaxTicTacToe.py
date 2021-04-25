@@ -149,19 +149,29 @@ def comp_turn(a_choice, p_choice):
     if depth == 0 or game_ends(board):
         return
 
+
     clean()
     print(f'Computer turn [{a_choice}]')
     render(board, a_choice, p_choice)
 
     # random start
+    
     if depth == 9:
         x = choice([0, 1, 2])
         y = choice([0, 1, 2])
     else: # subsequent turns will be determined with minimax
+        time_minimax = 0
+        minimax_start = time.time()
+
         move = minimax(board, depth, AI)
         x, y = move[0], move[1]
 
+        print('Minimax time:')
+        print(time.time() - minimax_start)
+
     make_move(x, y, AI)
+
+    print()
     time.sleep(1)
 
 # returns scoring for the current board
@@ -219,18 +229,25 @@ def main():
     a_choice = 'X'
     p_choice = 'O'
     #gameloop
+    test_time = 0
     while(not game_ends(board)):
         #game loop outline:
         # 1)render the current board
         clean()
+        print('Computer turn total time:')
+        print(test_time)
         render(board, a_choice, p_choice)
 
         # 2)get player input
         player_turn(a_choice,p_choice)
 
         # 3)get AI input
-        comp_turn(a_choice,p_choice)
+        start = time.time()
 
+        comp_turn(a_choice,p_choice)
+        
+        end = time.time()
+        test_time = end - start
         # 4)repeat until win/draw/lose
         
     # render final board
