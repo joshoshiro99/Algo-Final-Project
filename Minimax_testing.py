@@ -128,9 +128,11 @@ def main():
             #output full output string
             file_minimax.write(str(gamestring_1)+str(gamestring_2)+'\n')
 
+            print("Game "+str(gamecounter)+" simulated!")
             #inc game counter
             gamecounter += 1
-
+        print("Done!")
+        print("All games simulated!!")
 
 
         
